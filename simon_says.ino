@@ -12,7 +12,7 @@ const int PLAY = 1;
 const int GAMEOVER = 2;
 
 // time in player has to press a button (ms)
-int speed = 1000;
+int speed = 1500;
 
 int gameState;
 boolean running = true;
@@ -51,7 +51,6 @@ void loop()
 {
   if(gameState == START)
   {
-    Serial.println("Waiting to start");
     waitToStart();
   }
   else if(gameState == PLAY)
@@ -76,24 +75,20 @@ void waitToStart()
   {
     if(digitalRead(buttons[pin]) == HIGH)
       {
-        buttonPressed = pin;
+        buttonPressed == pin;
       }
       
     if(buttonPressed == -1)
-    
-      // plays a random pattern of lights while waiting to start
-      digitalWrite(leds[pin], HIGH);
-      buttonPressed = waitForButton(speed);
-      digitalWrite(leds[pin], LOW);
+      buttonPressed = waitForButton(500);
+
   }
-  
-  
+
   if(buttonPressed != -1)
   {
     // A button was pushed so wait then start playing.
     delay(2000);
     largestIndex = 0; // Restart
-    gameState = PLAY; 
+   	gameState = PLAY; 
   }
 }
 
@@ -122,6 +117,8 @@ void readSequence()
     else if(positionPressed != sequence[index])
     {
       madeMistake = true; // Exit the loop
+      Serial.println("Made Mistake");
+      gameState = GAMEOVER;
     }
   }
 }
@@ -222,7 +219,18 @@ int waitForButton(int delay)
 //}
 
 
-
+void blink(int times)
+{
+  for(int count = 0; count < times; count++)
+  {
+  	for(int pin = 0; pin < 4; pin++)
+  	{
+  	 digitalWrite(leds[pin], HIGH);
+  	 delay(330);
+  	 digitalWrite(leds[pin], LOW);
+  	}
+  }
+}
 
 
 // Turns all LEDs off
