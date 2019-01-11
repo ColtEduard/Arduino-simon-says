@@ -25,19 +25,19 @@ void setup()
 {  
   for(int pin=0; pin<4; pin++)
   {
-  	pinMode(leds[pin], OUTPUT);
+    pinMode(leds[pin], OUTPUT);
   }
   
   for(int pin=0; pin<4; pin++)
   {
-  	pinMode(buttons[pin], INPUT);
+    pinMode(buttons[pin], INPUT);
   }
   
     //Setup serial communications through the USB
     Serial.begin(9600);
     
     // Start the game with the START.
-    gameState = START; 
+    gameState = PLAY; 
     
     // reads noise from an unused analog pin
     // initializes the psude-random number generator
@@ -52,7 +52,7 @@ void loop()
   if(gameState == START)
   {
     Serial.println("Waiting to start");
-  	waitToStart();
+    waitToStart();
   }
   else if(gameState == PLAY)
   {
@@ -76,14 +76,14 @@ void waitToStart()
   {
     if(digitalRead(buttons[pin]) == HIGH)
       {
-        buttonPressed == pin;
+        buttonPressed = pin;
       }
       
     if(buttonPressed == -1)
     
       // plays a random pattern of lights while waiting to start
       digitalWrite(leds[pin], HIGH);
-      buttonPressed = waitForButton(500);
+      buttonPressed = waitForButton(speed);
       digitalWrite(leds[pin], LOW);
   }
   
@@ -93,7 +93,7 @@ void waitToStart()
     // A button was pushed so wait then start playing.
     delay(2000);
     largestIndex = 0; // Restart
-   	gameState = PLAY; 
+    gameState = PLAY; 
   }
 }
 
@@ -110,14 +110,18 @@ void readSequence()
     Serial.println("Should push"); 
     Serial.println(sequence[index]);
     
-    positionPressed = waitForButton(speed); // 0, 1, 2, or 3
+    positionPressed = waitForButton(speed); // returns the button pressed
 
     Serial.println("Pressed"); 
     Serial.println(positionPressed); 
-    if((positionPressed == -1) | (positionPressed != sequence[index]))
+    if((positionPressed == -1))
     {
-      	madeMistake = true; // Exit the loop.
-		gameState = GAMEOVER;
+    madeMistake = true; // Exit the loop.
+    gameState = GAMEOVER;
+    }
+    else if(positionPressed != sequence[index])
+    {
+      madeMistake = true; // Exit the loop
     }
   }
 }
@@ -132,7 +136,7 @@ void showSequence()
   for(int index=0; index<largestIndex; index++)
   {
      delay(300);
-   	 digitalWrite(leds[sequence[index]], HIGH);
+     digitalWrite(leds[sequence[index]], HIGH);
      delay(500);
      digitalWrite(leds[sequence[index]], LOW);
   }
@@ -148,8 +152,8 @@ int waitForButton(int delay)
   int input;
   boolean buttonBackUp = false;
   
-  currentMillis = millis();  		// The number of ms since the program started running
-  previousMillis = currentMillis; 	// Records the point when we start spinning the loop.
+  currentMillis = millis();     // The number of ms since the program started running
+  previousMillis = currentMillis;   // Records the point when we start spinning the loop.
   
   // Keep spinning the loop until "delay" seconds have passed.
   while (((currentMillis - previousMillis) < delay) & (buttonBackUp == false))
@@ -194,28 +198,28 @@ int waitForButton(int delay)
 }
 
 // Checks if a button was pressed and if it exceeded the delay
-boolean readAnyButton(int delay, int button)
-{
-  boolean buttonDown = false;
-  
-  currentMillis = millis();  		// The number of ms since the program started running
-  previousMillis = currentMillis; 	// Records the point when we start spinning the loop.
-  
-  // Keep spinning the loop until "delay" seconds have passed.
-  while (((currentMillis - previousMillis) < delay) & (buttonDown == false))
-  {
-    // Read the button and record when it has been pushed down.
-    for(int pin = 0; pin < 4; pin++)
-    {
-      if(digitalRead(buttons[pin]) == HIGH)
-      {
-        buttonDown = true;
-      }
-    }
-    // currentMillis = millis();
-  }
-  return buttonDown;
-}
+//boolean readAnyButton(int delay, int button)
+//{
+//  boolean buttonDown = false;
+//  
+//  currentMillis = millis();     // The number of ms since the program started running
+//  previousMillis = currentMillis;   // Records the point when we start spinning the loop.
+//  
+//  // Keep spinning the loop until "delay" seconds have passed.
+//  while (((currentMillis - previousMillis) < delay) & (buttonDown == false))
+//  {
+//    // Read the button and record when it has been pushed down.
+//    for(int pin = 0; pin < 4; pin++)
+//    {
+//      if(digitalRead(buttons[pin]) == HIGH)
+//      {
+//        buttonDown = true;
+//      }
+//    }
+//    // currentMillis = millis();
+//  }
+//  return buttonDown;
+//}
 
 
 
@@ -250,58 +254,58 @@ void blinkAll(int times)
   } 
 }
 
-void blinkRed(int times)
-{
-  for(int count = 0; count < times; count++)
-  {
-    digitalWrite(leds[0], HIGH);
-    delay(300);
-    digitalWrite(leds[0], LOW);
-    delay(300);
-  } 
-}
-
-void blinkYellow(int times)
-{
-  for(int count = 0; count < times; count++)
-  {
-    digitalWrite(leds[1], HIGH);
-    delay(300);
-    digitalWrite(leds[1], LOW);
-    delay(300);
-  } 
- } 
- 
- 
-void blinkBlue(int times)
-{
-  for(int count = 0; count < times; count++)
-  {
-    digitalWrite(leds[2], HIGH);
-    delay(300);
-    digitalWrite(leds[2], LOW);
-    delay(300);
-  } 
-}
-
-void blinkGreen(int times)
-{
-  for(int count = 0; count < times; count++)
-  {
-    digitalWrite(leds[3], HIGH);
-    delay(300);
-    digitalWrite(leds[3], LOW);
-    delay(300);
-  } 
-}
-
-void blinkLed(int pin, int times)
-{
-    for (int count = 0; count < times; count++)
-    {
-        digitalWrite(leds[pin], HIGH);
-        delay(300);
-        digitalWrite(leds[pin], LOW);
-        delay(300);
-    }
-}
+//void blinkRed(int times)
+//{
+//  for(int count = 0; count < times; count++)
+//  {
+//    digitalWrite(leds[0], HIGH);
+//    delay(300);
+//    digitalWrite(leds[0], LOW);
+//    delay(300);
+//  } 
+//}
+//
+//void blinkYellow(int times)
+//{
+//  for(int count = 0; count < times; count++)
+//  {
+//    digitalWrite(leds[1], HIGH);
+//    delay(300);
+//    digitalWrite(leds[1], LOW);
+//    delay(300);
+//  } 
+// } 
+// 
+// 
+//void blinkBlue(int times)
+//{
+//  for(int count = 0; count < times; count++)
+//  {
+//    digitalWrite(leds[2], HIGH);
+//    delay(300);
+//    digitalWrite(leds[2], LOW);
+//    delay(300);
+//  } 
+//}
+//
+//void blinkGreen(int times)
+//{
+//  for(int count = 0; count < times; count++)
+//  {
+//    digitalWrite(leds[3], HIGH);
+//    delay(300);
+//    digitalWrite(leds[3], LOW);
+//    delay(300);
+//  } 
+//}
+//
+//void blinkLed(int pin, int times)
+//{
+//    for (int count = 0; count < times; count++)
+//    {
+//        digitalWrite(leds[pin], HIGH);
+//        delay(300);
+//        digitalWrite(leds[pin], LOW);
+//        delay(300);
+//    }
+//}
